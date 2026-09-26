@@ -1,0 +1,413 @@
+/* =====================================================================
+   main_renew.css — 나우앤서베이 메인 리뉴얼 (2026)
+   모든 규칙은 .nsv-renew 래퍼 하위로 스코프됩니다.
+   기존 헤더(head.html)/푸터(tail.html) 및 사이트 전역 CSS와 충돌 방지.
+   참조: static-landing (Edukon 목업) — 자체 구현으로 재작성.
+   ===================================================================== */
+
+/* ---------- tokens ---------- */
+.nsv-renew {
+  --nsv-orange: #f16126;
+  --nsv-orange-dark: #d94e18;
+  --nsv-purple: #6a68d7;
+  --nsv-ink: #1f2330;
+  --nsv-body: #4b5060;
+  --nsv-muted: #8a90a2;
+  --nsv-line: #ececf2;
+  --nsv-bg: #f7f7fb;
+  --nsv-radius: 16px;
+  --nsv-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  --nsv-shadow-hover: 0 16px 48px rgba(241, 97, 38, 0.15), 0 4px 16px rgba(0, 0, 0, 0.08);
+  font-family: 'Pretendard', 'Poppins', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+  color: var(--nsv-body);
+  line-height: 1.6;
+}
+
+.nsv-renew *,
+.nsv-renew *::before,
+.nsv-renew *::after { box-sizing: border-box; }
+
+.nsv-renew img { max-width: 100%; }
+.nsv-renew a { text-decoration: none; }
+.nsv-renew ul { list-style: none; margin: 0; padding: 0; }
+.nsv-renew h1, .nsv-renew h2, .nsv-renew h3,
+.nsv-renew h4, .nsv-renew h5, .nsv-renew h6 { margin: 0; line-height: 1.3; }
+.nsv-renew p { margin: 0; }
+
+/* ---------- layout primitives ---------- */
+.nsv-renew .nsv-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.nsv-renew .nsv-section { padding: 72px 0; }
+.nsv-renew .nsv-section--bg { background: var(--nsv-bg); }
+
+.nsv-renew .nsv-section-head { text-align: center; margin-bottom: 44px; }
+.nsv-renew .nsv-section-head .nsv-eyebrow {
+  display: inline-block;
+  color: var(--nsv-orange);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.nsv-renew .nsv-section-head .nsv-title { font-size: 34px; font-weight: 800; }
+.nsv-renew .nsv-section-head .nsv-sub { margin-top: 12px; color: var(--nsv-muted); font-size: 15px; }
+
+.nsv-renew .nsv-grid { display: grid; gap: 24px; }
+.nsv-renew .nsv-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.nsv-renew .nsv-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.nsv-renew .nsv-grid--6 { grid-template-columns: repeat(6, 1fr); }
+.nsv-renew .nsv-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---------- buttons ---------- */
+.nsv-renew .nsv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 30px;
+  border-radius: 10px;
+  background: var(--nsv-orange);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  border: 2px solid var(--nsv-orange);
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
+}
+.nsv-renew .nsv-btn:hover { background: var(--nsv-orange-dark); border-color: var(--nsv-orange-dark); transform: translateY(-2px); color: #fff; }
+.nsv-renew .nsv-btn--outline { background: transparent; color: var(--nsv-orange); }
+.nsv-renew .nsv-btn--outline:hover { background: var(--nsv-orange); color: #fff; }
+.nsv-renew .nsv-btn--sm { padding: 9px 18px; font-size: 13px; border-radius: 8px; }
+
+/* =====================================================================
+   HERO — 상단 배너 + KPI 태그 + 세로 스택(키/앵커) 슬라이드
+   ===================================================================== */
+.nsv-renew .nsv-hero {
+  position: relative;
+  background: linear-gradient(180deg, #fff 0%, #fbf6f2 60%, var(--nsv-bg) 100%);
+  padding: 48px 0 24px;
+}
+.nsv-renew .nsv-hero-inner {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 32px;
+  align-items: center;
+}
+.nsv-renew .nsv-hero-eyebrow {
+  color: var(--nsv-orange);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.nsv-renew .nsv-hero-title { font-size: 48px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+.nsv-renew .nsv-hero-title span { color: var(--nsv-orange); }
+.nsv-renew .nsv-hero-desc { font-size: 17px; color: var(--nsv-body); margin-bottom: 26px; }
+.nsv-renew .nsv-hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.nsv-renew .nsv-hero-visual img { width: 100%; border-radius: var(--nsv-radius); box-shadow: var(--nsv-shadow); }
+
+/* KPI 태그 — 클릭 시 해당 슬라이드로 스무스 스크롤 */
+.nsv-renew .nsv-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+.nsv-renew .nsv-hero-tags a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--nsv-line);
+  color: var(--nsv-ink);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+  transition: all .18s ease;
+}
+.nsv-renew .nsv-hero-tags a::before { content: "#"; color: var(--nsv-orange); font-weight: 800; }
+.nsv-renew .nsv-hero-tags a:hover { border-color: var(--nsv-orange); color: var(--nsv-orange); transform: translateY(-2px); }
+
+/* 세로 스택 슬라이드 */
+.nsv-renew .nsv-hero-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 40px 0 8px;
+}
+.nsv-renew .nsv-slide {
+  position: relative;
+  scroll-margin-top: 110px;               /* 고정 헤더 보정 */
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--nsv-shadow);
+  border: 1px solid var(--nsv-line);
+}
+.nsv-renew .nsv-slide:target {
+  animation: nsvSlideHighlight 1.2s ease forwards;
+}
+@keyframes nsvSlideHighlight {
+  0%   { box-shadow: 0 0 0 0 rgba(106, 104, 215, .45); }
+  50%  { box-shadow: 0 0 0 16px rgba(106, 104, 215, 0); }
+  100% { box-shadow: var(--nsv-shadow); }
+}
+/* 슬라이드 내부 원본 배너 콘텐츠가 자연스럽게 흐르도록 최소 보정 */
+.nsv-renew .nsv-slide > li,
+.nsv-renew .nsv-slide .bx-wrapper { display: block !important; }
+.nsv-renew .nsv-slide-key {
+  position: absolute;
+  top: 16px; right: 16px;
+  z-index: 20;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+  background: rgba(31, 35, 48, .55);
+  padding: 5px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+/*
+.nsv-renew #s_banner_wrap.nsv-stacked { height: auto !important; }
+.nsv-renew #s_banner_wrap.nsv-stacked .bxslider {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.nsv-renew #s_banner_wrap.nsv-stacked .bxslider > li {
+  position: relative;
+  float: none;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  scroll-margin-top: 110px;
+  box-shadow: var(--nsv-shadow);
+}
+
+.nsv-renew.nsv-usecase-native { max-width: none; margin: 0; padding: 90px 0 30px; }
+.nsv-renew .nsv-usecase-head { text-align: center; margin-bottom: 44px; padding: 0 16px; }
+
+.nsv-renew.nsv-usecase-native #s_banner_wrap.nsv-stacked .bxslider { gap: 0; }
+.nsv-renew.nsv-usecase-native #s_banner_wrap.nsv-stacked .bxslider > li {
+  border-radius: 0;
+  box-shadow: none;
+}
+  */
+.nsv-renew .nsv-usecase-head .nsv-usecase-sub {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6c5ce7;
+  margin-bottom: 12px;
+}
+.nsv-renew .nsv-usecase-head .nsv-usecase-tit {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #101115;
+  margin: 0;
+  word-break: keep-all;
+  text-align: center;
+  margin-bottom: 20px;
+}
+@media (max-width: 768px) {
+  .nsv-renew.nsv-usecase-native { padding: 56px 14px 20px; }
+  .nsv-renew .nsv-usecase-head { margin-bottom: 10px; }
+  .nsv-renew .nsv-usecase-head .nsv-usecase-tit { font-size: 26px; margin-bottom: 10px;}
+}
+
+/* =====================================================================
+   SPONSOR / PARTNER 마퀴
+   ===================================================================== */
+.nsv-renew .nsv-marquee { overflow: hidden; padding: 34px 0; }
+.nsv-renew .nsv-marquee-track {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  width: max-content;
+  animation: nsvMarquee 34s linear infinite;
+}
+.nsv-renew .nsv-marquee:hover .nsv-marquee-track { animation-play-state: paused; }
+.nsv-renew .nsv-marquee-track img { height: 60px; width: auto; max-width: 150px; object-fit: contain; filter: grayscale(1); opacity: .7; transition: all .2s; }
+.nsv-renew .nsv-marquee-track img:hover { filter: none; opacity: 1; }
+@keyframes nsvMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* =====================================================================
+   CARD (패널설문 / 설문광장)
+   ===================================================================== */
+.nsv-renew .nsv-card {
+  background: #fff;
+  border: 1px solid var(--nsv-line);
+  border-radius: var(--nsv-radius);
+  overflow: hidden;
+  transition: transform .22s ease, box-shadow .22s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.nsv-renew .nsv-card:hover { transform: translateY(-6px); box-shadow: var(--nsv-shadow-hover); }
+.nsv-renew .nsv-card-thumb { aspect-ratio: 16 / 10; overflow: hidden; background: #f2f2f7; }
+.nsv-renew .nsv-card-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.nsv-renew .nsv-card-body { padding: 18px 18px 16px; display: flex; flex-direction: column; flex: 1; }
+.nsv-renew .nsv-badge {
+  align-self: flex-start;
+  font-size: 12px; font-weight: 700;
+  color: var(--nsv-purple);
+  background: rgba(106, 104, 215, .1);
+  border-radius: 20px;
+  padding: 3px 10px;
+  margin-bottom: 8px;
+}
+.nsv-renew .nsv-card-title { font-size: 16px; font-weight: 700; line-height: 1.4; min-height: 2.8em; }
+.nsv-renew .nsv-card-author { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--nsv-muted); }
+.nsv-renew .nsv-card-author img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+.nsv-renew .nsv-card-divider { border: 0; border-top: 1px solid var(--nsv-line); margin: 12px 0; }
+.nsv-renew .nsv-card-meta { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--nsv-body); flex: 1; }
+.nsv-renew .nsv-card-meta p { display: flex; align-items: center; gap: 6px; }
+.nsv-renew .nsv-card-meta .nsv-ic { width: 15px; height: 15px; flex-shrink: 0; }
+.nsv-renew .nsv-card-foot { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+.nsv-renew .nsv-card-foot .nsv-btn { flex: 1; }
+.nsv-renew .nsv-share-btn { width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--nsv-line); background: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+.nsv-renew .nsv-share-btn img { width: 16px; height: 16px; }
+
+.nsv-renew .nsv-more { text-align: center; margin-top: 40px; }
+
+/* =====================================================================
+   핫이슈 결과분석 (Blog)
+   ===================================================================== */
+.nsv-renew .nsv-blog-notice { text-align: center; font-size: 13px; color: var(--nsv-muted); margin-top: 6px; }
+.nsv-renew .nsv-blog-notice span { color: var(--nsv-orange); margin-right: 4px; }
+.nsv-renew .nsv-post { background: #fff; border: 1px solid var(--nsv-line); border-radius: var(--nsv-radius); overflow: hidden; transition: transform .22s ease, box-shadow .22s ease; }
+.nsv-renew .nsv-post:hover { transform: translateY(-6px); box-shadow: var(--nsv-shadow-hover); }
+.nsv-renew .nsv-post-thumb { aspect-ratio: 16 / 9; overflow: hidden; }
+.nsv-renew .nsv-post-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.nsv-renew .nsv-post-body { padding: 18px; }
+.nsv-renew .nsv-post-body h4 { font-size: 16px; font-weight: 700; margin: 8px 0; line-height: 1.4; }
+.nsv-renew .nsv-post-date { font-size: 13px; color: var(--nsv-muted); }
+.nsv-renew .nsv-post-foot { display: flex; align-items: center; justify-content: space-between; padding: 0 18px 18px; }
+.nsv-renew .nsv-post-foot .nsv-react { font-size: 13px; color: var(--nsv-muted); margin-left: 8px; }
+
+/* =====================================================================
+   유용한 도구 (스마트 기능) — 아이콘은 변경하지 않음
+   ===================================================================== */
+.nsv-renew .nsv-tools { background: linear-gradient(180deg, #fff, #fbf6f2); }
+.nsv-renew .nsv-tool {
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--nsv-line);
+  border-radius: 14px;
+  padding: 26px 12px;
+  transition: transform .2s ease, box-shadow .2s ease;
+  height: 100%;
+}
+.nsv-renew .nsv-tool:hover { transform: translateY(-6px); box-shadow: var(--nsv-shadow-hover); }
+.nsv-renew .nsv-tool-icon { width: 62px; height: 62px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; }
+.nsv-renew .nsv-tool-icon img { max-width: 100%; max-height: 100%; }
+.nsv-renew .nsv-tool h6 { font-size: 14px; font-weight: 700; }
+
+/* =====================================================================
+   패널 네트워크 (About) + 신뢰 패널 (Counter/Achievement)
+   ===================================================================== */
+.nsv-renew .nsv-about-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.nsv-renew .nsv-about-list li { display: flex; gap: 16px; padding: 14px 0; }
+.nsv-renew .nsv-about-list li img { width: 52px; height: 52px; flex-shrink: 0; }
+.nsv-renew .nsv-about-list h5 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.nsv-renew .nsv-about-thumb img { border-radius: var(--nsv-radius); box-shadow: var(--nsv-shadow); }
+
+.nsv-renew .nsv-counter { text-align: center; padding: 24px 12px; }
+.nsv-renew .nsv-counter h2 { font-size: 40px; font-weight: 800; color: var(--nsv-orange); }
+.nsv-renew .nsv-counter p { margin-top: 6px; color: var(--nsv-body); font-weight: 600; }
+
+.nsv-renew .nsv-achieve { display: flex; gap: 22px; background: #fff; border: 1px solid var(--nsv-line); border-radius: var(--nsv-radius); overflow: hidden; padding: 22px; align-items: center; }
+.nsv-renew .nsv-achieve-thumb { flex: 0 0 42%; }
+.nsv-renew .nsv-achieve-thumb img { border-radius: 12px; }
+.nsv-renew .nsv-achieve h4 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.nsv-renew .nsv-achieve p { margin-bottom: 14px; font-size: 14px; }
+
+.bnr25_btn_box{flex-wrap: nowrap;}
+.bnr_23 .bnr_22_t_3 .cardWrapper .card .bnr_googleform_btn a{
+  padding: 0 12px;
+}
+.bnr_21 .btn .bnr_googleform_btn a:hover{
+  background: #5D22C5;
+  color: #fff;
+  border: none;
+  transform: none;
+}
+.bnr_21 .btn .bnr_googleform_btn a::before{
+  display: none;
+}
+.bnr_23 .tabletCardWrapper .tabletCard{
+  border-radius: 8px;
+}
+/* =====================================================================
+   XR 브랜드관
+   ===================================================================== */
+.nsv-renew .nsv-xr { position: relative; border-radius: 20px; overflow: hidden; min-height: 320px; display: flex; align-items: center; }
+.nsv-renew .nsv-xr video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.nsv-renew .nsv-xr-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(20,16,40,.75), rgba(20,16,40,.25)); }
+.nsv-renew .nsv-xr-content { position: relative; z-index: 2; padding: 48px; color: #fff; }
+.nsv-renew .nsv-xr-content .nsv-xr-sub { font-size: 15px; opacity: .9; }
+.nsv-renew .nsv-xr-content h2 { color: #fff; font-size: 30px; font-weight: 800; margin: 8px 0 20px; }
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width: 1023px) {
+  .nsv-renew .nsv-hero-inner { grid-template-columns: 1fr; }
+  .nsv-renew .nsv-hero-visual { order: -1; }
+  .nsv-renew .nsv-hero-title { font-size: 36px; }
+  .nsv-renew .nsv-grid--6 { grid-template-columns: repeat(3, 1fr); }
+  .nsv-renew .nsv-grid--3 { grid-template-columns: repeat(2, 1fr); }
+  .nsv-renew .nsv-grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .nsv-renew .nsv-about-inner { grid-template-columns: 1fr; }
+  .nsv-renew .nsv-section-head .nsv-title { font-size: 28px; }
+  .nsv-usecase-native #s_banner_wrap.nsv-stacked .bxslider > li{height: 520px;}
+  .bnr_26 .noti-center-bottom{bottom: 16px; width: 100%;}
+}
+
+@media (max-width: 768px) {
+  .nsv-renew .bnr_26{
+    height: 440px !important;
+    
+  }
+  .nsv-renew .bnr_25{
+    height: 460px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .nsv-renew .bnr_24{height: 440px !important;}
+  .nsv-renew .bnr_21{
+    height: 440px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .nsv-renew .nsv-section { padding: 48px 0; }
+  .nsv-renew .nsv-hero-title { font-size: 30px; }
+  .nsv-renew .nsv-grid--6 { grid-template-columns: repeat(2, 1fr); }
+  .nsv-renew .nsv-grid--3,
+  .nsv-renew .nsv-grid--2,
+  .nsv-renew .nsv-grid--4 { grid-template-columns: 1fr; }
+  .nsv-renew .nsv-achieve { flex-direction: column; align-items: stretch; }
+  .nsv-renew .nsv-achieve-thumb { flex-basis: auto; }
+  .nsv-renew .nsv-xr-content { padding: 28px; }
+  .nsv-renew .nsv-xr-content h2 { font-size: 22px; }
+}

@@ -1,0 +1,952 @@
+/* 모달 공통 */
+input {
+	outline: none;
+	transition: border-color 0.2s;
+}
+
+/* input:hover,
+input:focus {
+	border: 2px solid #ed5c23;
+} */
+
+::-webkit-scrollbar {
+  width: 5px;  /* 세로축 스크롤 바 너비 */
+  height: 5px;  /* 가로축 스크롤 바 높이 */
+}
+
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+  display: block; /* 스크롤 버튼 표시 */
+  height: 10px; /* 스크롤 버튼 높이 */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  min-height: 50px;
+}
+
+/* 스크롤바 썸 호버 효과 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa; 
+}
+
+::-webkit-scrollbar-button {
+  display: none !important;
+  height: 0;
+  width: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+
+.modal-wrap * {
+	color: #181818;
+	word-break: keep-all;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+.flex {
+	display: flex;
+}
+
+.col4 {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.col8 {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.col16 {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.col24 {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.col32 {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.col48 {
+	display: flex;
+	flex-direction: column;
+	gap: 48px;
+}
+
+.gap8 {
+	display: flex;
+	gap: 8px;
+}
+
+.gap16 {
+	display: flex;
+	gap: 8px;
+}
+
+.gap24 {
+	display: flex;
+	gap: 8px;
+}
+
+.font-16 {
+	font-size: 16px;
+}
+
+.font-18 {
+	font-size: 18px;
+}
+
+.font-500 {
+	font-weight: 500;
+}
+
+.font-600 {
+	font-weight: 600;
+}
+
+.font-700 {
+	font-weight: 700;
+}
+
+.modal-wrap .primary {
+	color: #ed5c23 !important;
+}
+
+.modal-wrap .bg-primary {
+	background-color: #ed5c23 !important;
+}
+
+.modal-wrap .bg-black {
+  background-color: #181818;
+}
+
+.modal-wrap .bg-cancel {
+    background: #dbdbdb !important;
+    color: #666 !important;
+}
+
+.modal-wrap table {
+  border-collapse: collapse;
+  border: 1px solid #D1D5DC; 
+}
+
+.modal-wrap table th,
+.modal-wrap table td {
+  padding: 8px;
+  word-break: keep-all;
+  border-bottom: 1px solid #D1D5DC; 
+  border-right: 1px solid #D1D5DC; 
+}
+
+.modal-wrap table thead th {
+  background: #f8f8f8;
+  font-weight: 600;
+  border-bottom: 1px solid #D1D5DC;
+}
+
+.modal-wrap table th:last-child,
+.modal-wrap table td:last-child {
+  border-right: 0;
+}
+
+.modal-wrap input[type="checkbox"] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  accent-color: #ed5c23;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.modal-wrap {
+	display: none;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	z-index: 9999;
+}
+
+.modal-wrap.open {
+	display: block;
+}
+
+.modal-wrap .overlay {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-wrap .modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	background: #fff;
+	max-width: 90%;
+	width: max-content;
+	height: max-content;
+	max-height: 86vh;
+	border: 0;
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal-wrap .modal.modal-basic {
+	max-width: 360px;
+}
+
+.modal-wrap .modal .modal-top {
+	flex-shrink: 0;
+    padding: 24px 24px 8px 24px;
+}
+
+.modal-title {
+	width: 100%;
+    font-size: 18px;
+    font-weight: 700;
+    color: #222;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.modal-title.font-xl {
+	font-size: 22px;
+}
+
+.modal-subtitle {
+	font-size: 16px;
+	color: #555;
+}
+
+.modal-title.center {
+	justify-content: center;
+}
+
+.modal-subtitle.center {
+	text-align: center;
+}
+
+.modal-wrap .modal .close-btn {
+	position: absolute;
+	cursor: pointer;
+    top: 12px;
+    right: 12px;
+	transition: 0.3s;
+}
+
+.modal-wrap .modal .close-btn img {
+	width: 24px;
+}
+
+.modal-wrap .modal .close-btn:hover {
+	background: #eee;
+	border-radius: 4px;
+}
+
+.modal-wrap .modal .scroll {
+	/* flex: 1 + min-height: 0 is the correct iOS Safari fix.
+	   "height: 100%" inside a flex container with no definite height
+	   resolves to 0 on iOS Safari, collapsing all content. */
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch;
+}
+
+.modal-wrap .modal .modal-con {
+	padding: 24px;
+}
+
+.modal-wrap .modal-basic .modal-con {
+  padding: 12px 24px;
+}
+
+.modal-basic .modal-con .modal-txt {
+  color: #4d4d4d;
+  font-size: 14px;
+}
+
+.modal-wrap .modal .modal-bottom {
+	padding: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.modal-wrap .modal .modal-bottom button {
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.modal-wrap .modal .modal-bottom button  {
+	color: #fff;
+	width: 100%;
+	height: 46px;
+	border-radius: 6px;
+	border: 0;
+}
+
+.modal-wrap .modal .modal-bottom button.cancel-btn {
+  background: #fff;
+  border: 1px solid #CBCFD7;
+  color: #4D4D4D;
+}
+
+.modal-wrap .modal .modal-bottom button.confirm {
+  background-color: #6A68D7;
+}
+
+.modal-wrap .modal .modal-bottom button.register-btn {
+	background-color: #181818;
+	color: #fff;
+}
+
+.modal-wrap .modal .modal-bottom button.register-btn:disabled {
+	background-color: #bbb;
+}
+
+.alert-box {
+	width: 100%;
+	padding: 16px;
+	border-radius: 0 8px 8px 0;
+	font-size: 14px;
+}
+
+.alert-box.warning {
+	border-left: 4px solid #FFCD78;
+	background-color: #FFF7E9;
+}
+
+.alert-box.positive {
+	border-left: 4px solid #7CDAB1;
+	background-color: #ECFAF3;
+}
+
+/* 텍스트 공통 */
+
+.guide-h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ed5c23;
+}
+
+.guide-desc {
+	position: relative;
+	padding-left: 12px;
+}
+
+.guide-desc::before {
+	position: absolute;
+	left: 0;
+	top: 8px;
+	content: '';
+	width: 3.5px;
+	height: 3.5px;
+	border-radius: 10px;
+	background: #181818;
+}
+
+/* 타이틀 */
+.guide-term-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* 본문 텍스트 */
+.guide-term-text {
+  font-size: 14px;
+}
+
+/* 팁박스 */
+.modal-wrap .tip-box {
+	background-color: #EFF6FF;
+	border-radius: 8px;
+	padding: 16px;
+}
+
+.modal-wrap .tip-box .badge {
+	padding: 3px 6px;
+	border-radius: 4px;
+	background: #5CA2FF;
+	color: #fff;
+	display: inline-block;
+	width: fit-content;
+	font-weight: 500;
+}
+
+.modal-wrap .tip-box .desc {
+	position: relative;
+	display: inline-block;
+	padding-left: 12px;
+}
+
+.modal-wrap .tip-box .desc::before {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    content: '';
+    width: 3.5px;
+    height: 3.5px;
+    border-radius: 10px;
+    background: #222;
+}
+
+/* 컨택 인포 박스 */
+.modal-wrap .Inquiry-box {
+	background: #F9FAFB;
+	border-radius: 8px;
+	padding: 16px;
+}
+
+/* 노티스 */
+.modal-wrap ul.noti li {
+	font-size: 14px;
+	color: #555;
+}
+
+
+/* s: 자기진단 가이드 모달 */
+.diagnosis_modal-wrap .modal {
+	width: 840px;
+}
+
+.wrap-make .diagnosis_modal-wrap .modal {
+	margin-top: 50px;
+    max-height: 80vh;
+}
+
+.sample-download {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.btn-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	justify-content: space-between;
+}
+
+.btn-row a {
+	padding: 8px 12px;
+	border-radius: 4px;
+	display: block;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+a.sample-download-btn {
+	border: 1px solid #ed5c23;
+	color: #ed5c23;
+	background: #fff6f3;
+    font-size: 14px;
+}
+
+a.intro-doc-btn {
+    color: #222;
+	border: 1px solid #888;
+}
+
+a.video-btn {
+	background: #333;
+    color: #fff;
+}
+
+a.sample-download-btn img {
+	filter: invert(55%) sepia(42%) saturate(6928%) hue-rotate(348deg) brightness(96%) contrast(93%);
+}
+
+.btn-row a img {
+	width: 22px;
+}
+
+.btn-row .video-btn img {
+	filter: brightness(2);
+}
+
+.guide-btn-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	background: #f6f6f6;
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.guide-btn-list .arrow-icon {
+	width: 14px;
+	transform: rotate(90deg);
+	margin: 0 auto;
+	filter: invert(51%) sepia(23%) saturate(0%) hue-rotate(285deg) brightness(60%) contrast(104%);
+}
+
+.guide-btn-list .refresh-icon {
+	width: 24px;
+	filter: invert(51%) sepia(23%) saturate(0%) hue-rotate(285deg) brightness(60%) contrast(104%);
+	margin: 0 auto;
+}
+
+.guide-btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 12px 12px 12px 24px;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: default;
+	text-align: left;
+}
+
+.guide-btn small {
+	color: #7D879B;
+}
+.guide-btn.active {
+  background: #FF733C;
+  color: #fff;
+  border-color: #FF733C;
+}
+
+.diagnosis_modal-wrap .guide-terms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.guide-btn-list .logic-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border: 1px solid #ed5c23;
+    background: #FFF6F3;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.guide-btn-list .logic-guide p {
+	font-size: 16px;
+	color: #ed5c23;
+	 font-weight: 500;
+}
+
+/* 개별 카드 */
+.diagnosis_modal-wrap .guide-term-card {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background-color: #f5f7ff;
+}
+.diagnosis_modal-wrap .guide-term-card:nth-child(1) {
+  background-color: #f3f7ff; 
+  border: 1px solid #ced6e7;
+}
+
+.diagnosis_modal-wrap .guide-term-card:nth-child(2) {
+  background-color: #ebfff4; 
+	border: 1px solid #b4d7c4;
+}
+
+.diagnosis_modal-wrap .guide-term-card:nth-child(3) {
+  background-color: #faf4ff;
+  border: 1px solid #e5d6f1;
+}
+
+.diagnosis_modal-wrap .guide-term-card:nth-child(4) {
+  background-color: #fff3f7;
+border: 1px solid #edd7de;
+}
+
+.diagnosis_modal-wrap .checklist-box {
+	background-color: #F9FAFB;
+	border: 1px solid #CBCFD7;
+	padding: 16px;
+	border-radius: 8px;
+}
+
+.diagnosis_modal-wrap .checklist-box p {
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.diagnosis_modal-wrap .checklist-box ul li {
+	position: relative;
+	padding-left: 30px;
+}
+
+.diagnosis_modal-wrap .checklist-box ul li::before {
+	position: absolute;
+	content: '';
+	left: 0;
+	top: 1px;
+	width: 16px;
+	height: 16px;
+	border-radius: 4px;
+	border: 1px solid #CBCFD7;
+	background: #fff;
+}
+
+/* e: 자기진단 가이드 모달 */
+
+/* s: 설문광장 리워드 이벤트 설문 만드는방법 안내 모달 */
+.svy_event_howto_modal {
+	min-width: 680px;
+	width: 100% !important;
+	margin-top: 24px;
+}
+
+.svy_event_howto_modal .video-wrap {
+	display: flex;
+	gap: 16px;
+}
+
+.svy_event_howto_modal .video-thumb {
+	width: 100%;
+}
+
+.svy_event_howto_modal .video-thumb a,
+.svy_event_howto_modal .video-thumb-link {
+	display: block;
+	position: relative;
+	width: 100%;
+	/* padding-bottom trick: works on ALL iOS versions including < 15
+	   (aspect-ratio was only added to iOS Safari in iOS 15) */
+	height: 0;
+	padding-bottom: 56.25%; /* 9/16 = 56.25% → 16:9 ratio */
+	border-radius: 16px;
+	overflow: hidden;
+	background-color: #d1d5db;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.svy_event_howto_modal .video-thumb-img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.svy_event_howto_modal .video-play-btn {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	width: 52px;
+	height: 52px;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.svy_event_howto_modal .video-thumb  button {
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 1.3;
+}
+
+/* e: 설문광장 리워드 이벤트 설문 만드는방법 안내 모달 */
+
+/* 마이페이지 > 이용권 등록 모달 */
+.voucher_modal_wrap .modal {
+	min-width: 420px;
+}
+
+input.code-input[type="text"] {
+    width: 100%;
+	min-height: 52px;
+    padding: 15px;
+    font-size: 18px;
+    border: 2px solid #dbdbdb;
+    border-radius: 8px;
+	color: #333;
+}
+
+.code-input:hover,
+.code-input:focus {
+	border: 2px solid #ed5c23;
+}
+
+/* 공유하기 모달 */
+.share-modal-wrap .modal {
+	height: fit-content;
+}
+
+.share-modal-wrap .modal .modal-con {
+	display: block;
+	position: static;
+	max-width: 100%;
+	min-height: auto;
+}
+
+.share-modal-wrap h3 {
+  font-size: 20px;
+  font-weight: 700;
+  justify-content: center;
+}
+
+.share-modal-wrap .share-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 34px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+justify-items: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.share-modal-wrap .share-list li {
+    margin-bottom: 10px;
+    width: 56px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.share-modal-wrap .share-list button {
+  width: 56px;
+  height: 56px;
+  padding: 12px 0;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.share-modal-wrap .share-list .kakao {
+  background: #fee500 url("/img/att/sns_kakao.png") no-repeat
+    center;
+  background-size: 60px;
+}
+
+.share-modal-wrap .share-list .naver {
+  background: #1ec800 url("/img/att/sns_naver.png") no-repeat
+    center;
+  background-size: 56px;
+}
+
+.share-modal-wrap .share-list .facebook {
+  background: #1877f2 url("/img/att/sns_facebook.png") no-repeat
+    center;
+  background-size: 60px;
+}
+
+.share-modal-wrap .share-list .line {
+    background: #06C755 url("/img/att/sns_line.png") no-repeat
+    center;
+  background-size: 60px;
+}
+
+.share-modal-wrap .share-list .band {
+  background: #2EB34A url("/img/v2/common/icon-share-band.png") no-repeat
+    center;
+  background-size: 60px;
+}
+
+.share-modal-wrap .share-list .twitter {
+    background: #55ACEE url("/img/att/sns_twitter.png") no-repeat
+    center;
+  background-size: 60px;
+}
+
+.share-modal-wrap .share-list .copy {
+  background: #ececec url("https://www.nownsurvey.com/img/icon/ico_link.svg") no-repeat center;
+  background-size: 32px;
+}
+
+
+
+.modal-wrap.share-modal-wrap .modal .close-btn {
+position: static;
+  background: #ddd;
+  border: none;
+  padding: 10px 0;
+  width: 100%;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 로그인 모달 */
+.login-modal-wrap .modal-title {
+	font-size: 20px;
+	justify-content: center;
+}
+
+.login-modal-wrap .modal-title b {
+	color: #ed5c23;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.login-form{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.login-input,  input[type="text"], input[type='password']  {
+    width:100%;
+    height:44px;
+    padding:0 16px;
+    border:1px solid #c0bfbf;
+    border-radius:6px;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+.login-check-wrap{
+    display:flex;
+    gap:16px;
+
+    margin-top:14px;
+}
+
+.check-item{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13px;
+    color:#666;
+	cursor: pointer;
+}
+
+.check-item span {
+	color: #555;
+}
+
+.btn-login-submit{
+    width:100%;
+    height:44px;
+    margin-top:24px;
+    border-radius:6px;
+    background:#ed5c23;
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.login-link-wrap{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    margin-top:20px;
+}
+
+.login-link-wrap a{
+    font-size:14px;
+    color:#666;
+    text-decoration:none;
+}
+
+.social-login-wrap{
+    margin-top:32px;
+}
+
+.social-title{
+    position:relative;
+    font-size:13px;
+    color:#999;
+    text-align:center;
+    margin-bottom:16px;
+}
+
+.social-list{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+}
+
+.social-btn{
+    width:52px;
+    height:52px;
+    border:0;
+    border-radius:50%;
+    cursor:pointer;
+}
+
+
+
+
+
+/* 모달 모바일 */
+@media all and (max-width: 768px) {
+	.modal-wrap .modal {
+		width: calc(100vw - 24px);
+		max-width: calc(100vw - 24px);
+		max-height: 88vh;
+		max-height: 88dvh;
+	}
+
+	.modal-wrap .modal.share-modal {
+		width: fit-content;
+	} 
+
+	.modal-wrap .modal .modal-top {
+		padding: 16px;
+	}
+
+	.modal-wrap .modal .modal-con {
+		padding: 16px;
+	}
+
+	/* 자기진단 가이드 모달 */
+	.diagnosis_modal-wrap .modal {
+		max-height: 70vh;
+		max-height: 70dvh;
+		width: 90%;
+	}
+
+	.guide-btn {
+		font-size: 14px;
+	}
+
+	/* 설문 만드는 방법 안내 모달 */
+	.svy_event_howto_modal {
+		min-width: unset;
+		width: 100%;
+		margin-top: 0;
+	}
+
+	.svy_event_howto_modal .video-wrap { 
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.svy_event_howto_modal .video-play-btn {
+		width: 44px;
+		height: 44px;
+	}
+	
+}

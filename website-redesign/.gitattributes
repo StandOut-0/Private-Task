@@ -1,0 +1,15 @@
+original/** -text
+redesign/** text=auto
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.ico -text
+*.webp -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+*.otf -text
+*.eot -text
+*.mp4 -text
+*.webm -text

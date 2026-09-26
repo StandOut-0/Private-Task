@@ -1,0 +1,2083 @@
+/*
+ * 2026 리뉴얼 수기 오버라이드 (스코핑 스크립트가 생성하는 nsv-landing.css 이후에 로드).
+ * - 레퍼런스 카드(.nsv-landing) 안에서 재사용하는 기존 사이트 위젯의 동작/스타일 보정.
+ * - 자동 생성물이 아니므로 재생성 시에도 보존됨.
+ */
+
+/* ───────────────────────────────────────────────
+   Horizontal overflow guard (1280 / 1366 laptop widths).
+   Hero rings and some fixed widgets can push scrollWidth past the viewport;
+   full-bleed sections then paint only to clientWidth → white band on the right.
+   clip avoids creating a scroll container (unlike overflow:hidden on some roots).
+─────────────────────────────────────────────── */
+html:has(.nsv-landing),
+html:has(.nsv-landing) body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+/* 플랫폼 리스트 모달이 열리면 html overflow-x:clip 이 fixed 기준점을
+   가로채지 않도록 풀어, 운영계처럼 화면 중앙에 뜨게 한다. */
+html:has(.nsv-landing):has(.familysite.open),
+html:has(.nsv-landing):has(.familysite.open) body {
+  overflow-x: visible;
+}
+.nsv-landing {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+/* ───────────────────────────────────────────────
+   공유 위젯(.share): 기존 메인 동작 이식.
+   레퍼런스 카드 컨텍스트에는 .main-page/.svy_list_li_new 상위 셀렉터가 없어
+   드롭다운(.sns)이 항상 펼쳐지던 문제를 해결한다. 기본 숨김 → 호버 시 노출.
+─────────────────────────────────────────────── */
+.nsv-landing .share { position: relative; display: inline-block; vertical-align: middle; cursor: pointer; line-height: 0; }
+.nsv-landing .share > a { line-height: 0; }
+/* 설문광장 카드리스트(.btn-share)와 동일: 원형 회색 배경 공유 버튼 */
+.nsv-landing .share .btn-share {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  line-height: 0;
+}
+.nsv-landing .share .btn-share img {
+  width: 20px;
+  height: 20px;
+  display: block;
+  filter: brightness(3);
+}
+
+/* PC 드롭다운 — 원형 공유 버튼(44px) 바로 위에 뜨도록 */
+.nsv-landing .share .sns { visibility: hidden; opacity: 0; position: absolute; right: 0; bottom: 52px; width: 252px; cursor: default; z-index: 10000; transition: opacity .15s ease; }
+.nsv-landing .share:hover .sns { visibility: visible; opacity: 1; }
+.nsv-landing .share .sns .sns-area2 { width: -moz-fit-content; width: fit-content; border: 1px solid #a1a1a1; box-shadow: 5px 5px 10px #E5E5E5; border-radius: 16px; background: #fff; padding: 16px; display: grid; gap: 12px; }
+.nsv-landing .share .sns .sns-area2 h1 { display: none; }
+.nsv-landing .share .sns .sns-area2 ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr);gap: 16px; width: fit-content; margin: 0 auto;}
+.nsv-landing .share .sns .sns-area2 ul::after { content: ''; display: block; clear: both; }
+.nsv-landing .share .sns .sns-area2 ul li { width: auto; float: left; padding: 0; margin: 0 4px 0 0 !important; }
+.nsv-landing .share .sns .sns-area2 ul li img { display: block; max-width: 50px; height: auto; }
+.nsv-landing .share .sns .sns-area2 > div { display: flex; align-items: center; gap: 8px;}
+.nsv-landing .share .sns .sns-area2 input[type='text'].width-250 { width: 135px; height: 35px; border: 1px solid #c7c7c7; box-sizing: border-box; text-indent: 10px; color: #999; }
+.nsv-landing .share .sns .sns-area2 .btn { margin: 0; padding: 0; }
+.nsv-landing .share .sns .sns-area2 .btn a { display: block; padding: 0 10px; height: 35px; background: #222; font-size: 13px; border-radius: 4px; color: #fff; line-height: 35px; min-width: 45px; text-align: center; }
+
+/* 모바일 전용 오버레이(.sns-area)는 카드에 직접 띄우지 않음 — openShare() 모달 원본만 사용 */
+.nsv-landing .share .sns-area { display: none; }
+.nsv-landing .share #mask { display: none; }
+
+/* PC: 호버 팝오버 / Mobile: 클릭 모달 — 패널·핫이슈는 한 카드에 둘 다 포함 */
+.nsv-landing .share-pc { display: inline-block; }
+.nsv-landing .share-mo { display: none; }
+@media (max-width: 1023px) {
+  .nsv-landing .share-pc { display: none !important; }
+  .nsv-landing .share-mo { display: inline-block !important; }
+}
+
+/* 공유 팝오버가 카드 overflow에 잘리지 않도록 */
+.nsv-landing .course-item .course-inner,
+.nsv-landing .course-item .course-content,
+.nsv-landing .sc-footer {
+  overflow: visible !important;
+}
+
+/* ───────────────────────────────────────────────
+   Hero: 7 large concentric dashed rings centered over the girl, with each KPI
+   tag PINNED to a ring — the tag's connector dot lands exactly on a ring line.
+   Placement is polar per tag (angle --a + ring radius --ring), chosen at
+   irregular angles/radii and with desynced gentle float so it reads organic,
+   not like a mechanical clock face. Shown at xl (1200px) and up.
+
+   Tuning per tag (below): --a = angle (0deg = right, 90 = top, CCW),
+   --ring = which ring the dot sits on (its radius in px). attach-left tags
+   sit left of centre (dot on their right); attach-right tags sit to the right.
+─────────────────────────────────────────────── */
+
+/* Gentle float for KPI cards */
+@keyframes nsvFloatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+@keyframes nsvFloatY2 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@media (min-width: 1200px) {
+  .nsv-landing .banner-section {
+    min-height: 560px !important;
+    position: relative !important;
+    /* Keep visible so KPI badges are not cropped. Page-level overflow-x:clip
+       already blocks horizontal scroll from decorative rings. */
+    overflow: visible !important;
+  }
+  .nsv-landing .banner-section > .container,
+  .nsv-landing .banner-section .section-wrapper,
+  .nsv-landing .banner-section .row,
+  .nsv-landing .banner-section [class*="col-"] {
+    overflow: visible !important;
+  }
+
+  /* ── Orbit BEHIND the cutout (header_original.png has transparent surround) ── */
+  .nsv-landing .banner-section .banner-thumb {
+    position: relative !important;
+    isolation: isolate;
+    overflow: visible !important;
+    max-height: none !important;
+    z-index: 1;
+    background: transparent !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .all-shapes {
+    position: absolute !important;
+    top: 46% !important;
+    left: 50% !important;
+    right: auto !important;
+    width: 640px !important;
+    height: 640px !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+    display: block !important;
+    z-index: 0 !important;           /* behind girl */
+    border: 0 !important;
+    background: none !important;
+    animation: none !important;
+    opacity: .75;
+    pointer-events: none;
+  }
+  .nsv-landing .banner-section .banner-thumb > img,
+  .nsv-landing .banner-section .banner-thumb picture,
+  .nsv-landing .banner-section .banner-thumb picture img {
+    position: relative !important;
+    z-index: 2 !important;           /* girl above orbits */
+    display: block;
+    width: 100%;
+    height: auto;
+    background: transparent !important;
+  }
+  .nsv-landing .banner-section .all-shapes:before,
+  .nsv-landing .banner-section .all-shapes:after { display: none !important; }
+
+  .nsv-landing .banner-section .all-shapes .nsv-ring {
+    position: absolute;
+    box-sizing: border-box;
+    border-radius: 50%;
+    border-style: dashed;
+    transform-origin: center center;
+    animation: rotate 160s linear infinite;
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(even) { animation-direction: reverse; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(1) { width: 200px; height: 200px; top: calc(50% - 100px); left: calc(50% - 100px); border-width: 1.4px; border-color: #ff8fd4; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(2) { width: 280px; height: 280px; top: calc(50% - 140px); left: calc(50% - 140px); border-width: 1.4px; border-color: #9d84ff; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(3) { width: 360px; height: 360px; top: calc(50% - 180px); left: calc(50% - 180px); border-width: 1.3px; border-color: #ffc088; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(4) { width: 440px; height: 440px; top: calc(50% - 220px); left: calc(50% - 220px); border-width: 1.3px; border-color: #ff8fd4; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(5) { width: 520px; height: 520px; top: calc(50% - 260px); left: calc(50% - 260px); border-width: 1.2px; border-color: #9d84ff; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(6) { width: 580px; height: 580px; top: calc(50% - 290px); left: calc(50% - 290px); border-width: 1.2px; border-color: #ffc088; }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(7) { width: 640px; height: 640px; top: calc(50% - 320px); left: calc(50% - 320px); border-width: 1.1px; border-color: #c3c8d4; }
+
+  /* ── KPI badges: polar from same centre as .all-shapes (inside .banner-thumb) ── */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list {
+    display: block !important;
+    position: absolute !important;
+    /* Identical origin to .all-shapes */
+    /* Match .all-shapes; do NOT use inset — it resets top/left afterward */
+    left: 50% !important;
+    top: 46% !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+    z-index: 5 !important;
+    pointer-events: none;
+    overflow: visible !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 0;
+    height: 0;
+    overflow: visible !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.ccl-shape {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    white-space: nowrap;
+    z-index: 5 !important;
+    pointer-events: auto;
+    width: auto !important;
+    height: auto !important;
+    /* Kill theme up-down animations that fight polar transform */
+    animation: none !important;
+  }
+  /* --a: 0deg = right, 90deg = top (CCW). --ring: px radius = orbit line.
+     Dot sits on the ring; card offsets so :after connector lands on that point. */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.attach-left {
+    transform: translate(
+      calc(cos(var(--a)) * var(--ring) - 100% - 20px),
+      calc(-1 * sin(var(--a)) * var(--ring) - 50%)
+    ) !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.attach-right {
+    transform: translate(
+      calc(cos(var(--a)) * var(--ring) + 20px),
+      calc(-1 * sin(var(--a)) * var(--ring) - 50%)
+    ) !important;
+  }
+  /* Float the label only (keeps polar transform + dots on the li intact) */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.ccl-shape a {
+    pointer-events: auto;
+    display: inline-block !important;
+    position: relative !important;
+    transition: background-color .3s ease, color .3s ease;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.ccl-shape a:hover{
+    background-color: #ed5c23;
+    color: #fff;
+  }
+
+  /*
+   * Connector dots live on the li (not the floating <a>) so they stay glued
+   * to the orbit while the label bobbles.
+   */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.ccl-shape a:after {
+    display: none !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.ccl-shape:before {
+    content: "" !important;
+    position: absolute !important;
+    top: 50% !important;
+    width: 6px !important;
+    height: 6px !important;
+    margin-top: -3px !important;
+    border-radius: 100% !important;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.attach-right:before {
+    left: -20px !important;
+    right: auto !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.attach-left:before {
+    right: -20px !important;
+    left: auto !important;
+  }
+  /* Match each shape’s theme dot colour */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-1:before { background: #00BFA8; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-2:before { background: #ff5dcc; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-3:before { background: #fe955c; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-4:before { background: #ff5dcc; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-5:before { background: #785eff; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-6:before { background: #7c3aed; }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-7:before { background: #0ea5e9; }
+
+  /*
+   * Ring radii (match .nsv-ring sizes / 2):
+   * 1:100  2:140  3:180  4:220  5:260  6:290  7:320
+   * Spread evenly on left/right arcs so dots sit on dashed rings.
+   */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-1 {
+    /* AI 자기진단 — lower-left outer arc */
+    --a: 205deg; --ring: 290px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-1 a {
+    animation-name: nsvFloatY; animation-duration: 3.6s; animation-delay: 0s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-2 {
+    /* 설문 생성 AI — mid-left */
+    --a: 168deg; --ring: 260px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-2 a {
+    animation-name: nsvFloatY2; animation-duration: 4.0s; animation-delay: .25s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-3 {
+    /* AI 어드바이저 — upper-left */
+    --a: 132deg; --ring: 220px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-3 a {
+    animation-name: nsvFloatY; animation-duration: 3.8s; animation-delay: .5s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-4 {
+    /* 설문 분석 AI — upper-right */
+    --a: 52deg; --ring: 220px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-4 a {
+    animation-name: nsvFloatY2; animation-duration: 4.2s; animation-delay: .1s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-5 {
+    /* 위치기반 — mid-upper right */
+    --a: 22deg; --ring: 260px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-5 a {
+    animation-name: nsvFloatY; animation-duration: 3.5s; animation-delay: .4s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-6 {
+    /* Logic Map — mid-right */
+    --a: -8deg; --ring: 290px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-6 a {
+    animation-name: nsvFloatY2; animation-duration: 3.9s; animation-delay: .2s;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-7 {
+    /* 구글폼 — lower-right outer */
+    --a: -42deg; --ring: 320px;
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-7 a {
+    animation-name: nsvFloatY; animation-duration: 3.7s; animation-delay: .65s;
+  }
+}
+
+/* Wide desktop: scale orbit box + every ring so KPI --ring still matches */
+@media (min-width: 1600px) {
+  .nsv-landing .banner-section .banner-thumb .all-shapes,
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list {
+    left: 52% !important;
+  }
+  .nsv-landing .banner-section .banner-thumb .all-shapes {
+    width: 700px !important;
+    height: 700px !important;
+  }
+  /* 700/640 ≈ 1.09375 — keep diameters = 2 × KPI --ring */
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(1) {
+    width: 220px; height: 220px; top: calc(50% - 110px); left: calc(50% - 110px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(2) {
+    width: 306px; height: 306px; top: calc(50% - 153px); left: calc(50% - 153px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(3) {
+    width: 394px; height: 394px; top: calc(50% - 197px); left: calc(50% - 197px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(4) {
+    width: 480px; height: 480px; top: calc(50% - 240px); left: calc(50% - 240px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(5) {
+    width: 560px; height: 560px; top: calc(50% - 280px); left: calc(50% - 280px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(6) {
+    width: 620px; height: 620px; top: calc(50% - 310px); left: calc(50% - 310px);
+  }
+  .nsv-landing .banner-section .all-shapes .nsv-ring:nth-child(7) {
+    width: 700px; height: 700px; top: calc(50% - 350px); left: calc(50% - 350px);
+  }
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-1 { --ring: 310px; } /* ring 6 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-2 { --ring: 280px; } /* ring 5 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-3 { --ring: 240px; } /* ring 4 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-4 { --ring: 240px; } /* ring 4 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-5 { --ring: 280px; } /* ring 5 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-6 { --ring: 310px; } /* ring 6 */
+  .nsv-landing .banner-section .banner-thumb .cbs-content-list ul li.shape-7 { --ring: 350px; } /* ring 7 */
+}
+
+/* =============================================================================
+   Header (GNB) polish — landing page only.
+   Scoped with body:has(.nsv-landing) so it (a) applies only on the renewed
+   landing page and (b) outranks gnb.css (which loads AFTER this file).
+   Global #header_gnb markup is untouched; this only restyles it here.
+   ========================================================================== */
+
+/* Glassy bar — .header wrapper is already position:fixed (common.css),
+   so the frosted surface reveals the content scrolling underneath it.
+   backdrop-filter 는 요소에 직접 주면 자손 position:fixed 가 헤더에 갇혀
+   모바일 플랫폼 리스트 모달이 화면 중앙에 뜨지 않음 → ::before 로 분리. */
+body:has(.nsv-landing) #header_gnb {
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 1px solid rgba(17, 24, 39, 0.06);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset,
+              0 10px 30px -22px rgba(17, 24, 39, 0.45);
+  transition: background-color .3s ease, box-shadow .3s ease, border-color .3s ease;
+}
+body:has(.nsv-landing) #header_gnb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  backdrop-filter: saturate(180%) blur(14px);
+}
+body:has(.nsv-landing) #header_gnb > * {
+  position: relative;
+  z-index: 1;
+}
+/* Graceful fallback where backdrop-filter is unsupported: keep it readable */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  body:has(.nsv-landing) #header_gnb::before { background-color: rgba(255, 255, 255, 0.96); }
+}
+
+/* 모바일 플랫폼 리스트: 운영계 gnb.css 와 동일하게 화면 중앙 모달 */
+@media screen and (max-width: 1024px) {
+  html:has(.nsv-landing) .header,
+  html:has(.nsv-landing) #header_gnb,
+  html:has(.nsv-landing) #header_gnb .section_gnb,
+  html:has(.nsv-landing) #header_gnb .gnb_logo,
+  html:has(.nsv-landing) #header_gnb .familysite {
+    overflow: visible !important;
+  }
+  body:has(.nsv-landing) #header_gnb .gnb_logo .familysite.open .site_list {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    align-content: center !important;
+    justify-content: center !important;
+    z-index: 100000 !important;
+    scale: 1 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    background-color: rgba(0, 0, 0, 0) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    backdrop-filter: blur(5px) !important;
+  }
+}
+
+/* 1depth 호버 밑줄은 gnb.css 공통 규칙 사용 (메인/서브 동일) */
+/* 랜딩에서만: 1depth 기본 글자색·서브메뉴 bold·설문만들기 lift */
+body:has(.nsv-landing) #header_gnb .gnb_nav > li > a.nav_link.dep_1 {
+  color: #354152;
+  border-radius: 8px;
+}
+body:has(.nsv-landing) #header_gnb .gnb_nav .menu_item .nav_link:hover {
+  color: #ed5c23;
+  font-weight: 700;
+}
+
+/* Gentle lift on the primary "설문 만들기" button for cohesion */
+body:has(.nsv-landing) #header_gnb .gnb_nav .fixed .btn_make {
+  transition: transform .2s ease, box-shadow .2s ease, background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+body:has(.nsv-landing) #header_gnb .gnb_nav .fixed .btn_make:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -8px rgba(237, 92, 35, 0.6);
+}
+
+/* Softer, quicker hover feedback on the top utility row (login/signup/etc.) */
+body:has(.nsv-landing) #header_gnb .gnb_util > li a {
+  transition: color .18s ease;
+}
+
+/* =============================================================================
+   XR 브랜드관 — now uses the original hero slide (.bnr_20) instead of a custom
+   banner. .bnr_20 .txt-box is position:absolute, so the wrapper must be
+   positioned for the copy to overlay the video. (.bnr_20 lives in v2/main.css)
+   ========================================================================== */
+.bnr_20.nsv-xr-native { position: relative; overflow: hidden; }
+
+/* =============================================================================
+   Card meta — align respondents-line icon→text gap with sibling meta rows (7px).
+   ========================================================================== */
+.nsv-landing .card-meta .respondents-line {
+  gap: 7px;
+}
+
+/* =============================================================================
+   Panel / Plaza course cards — equal height in a row.
+   Do NOT reserve empty title space. Stretch cards + pin footer so 1–3 line
+   titles keep buttons aligned without a blank gap under short titles.
+   ========================================================================== */
+.nsv-landing .nsv-panel-section .row > [class*="col"],
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid > [class*="col"] {
+  display: flex !important;
+}
+.nsv-landing .nsv-panel-section .course-item,
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid .course-item {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 12px;
+}
+.nsv-landing .nsv-panel-section .course-item .course-inner,
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid .course-item .course-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+.nsv-landing .nsv-panel-section .course-item .course-content,
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid .course-item .course-content {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+}
+.nsv-landing .nsv-panel-section .course-item .card-title,
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid .course-item .card-title {
+  /* Cap runaway titles only — height follows real line count */
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  line-clamp: 3;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.4 !important;
+  margin-bottom: 0.5rem !important;
+  min-height: 0 !important;
+}
+.nsv-landing .nsv-panel-section .course-item .sc-footer,
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid .course-item .sc-footer {
+  margin-top: auto !important;
+}
+
+/* =============================================================================
+   Card thumbnails (패널 설문 / 설문 광장 / 핫이슈): fill the thumb area uniformly
+   with no distortion, clipped to the card's rounded top.
+   ========================================================================== */
+.nsv-landing .course-item .course-inner .course-thumb {
+  overflow: hidden !important;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.nsv-landing .course-item .course-inner .course-thumb img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: fill !important;
+  aspect-ratio: auto !important;
+  display: block !important;
+}
+
+/* 설문광장 PC 카드 썸네일 — 운영 메인 plaza.css .box .thumbs-survey p img 와 동일
+   (234px 박스 + contain + 가운데). landing 의 200px/cover 와 위 fill/height:auto 를 덮음.
+   inner a 를 block 으로 잡아 세로 이미지가 왼쪽에만 붙지 않게 한다. */
+.nsv-landing .nsv-plaza-section .course-item .course-inner .course-thumb {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 234px !important;
+  background: #fff !important;
+  line-height: 0 !important;
+}
+.nsv-landing .nsv-plaza-section .course-item .course-inner .course-thumb > a {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+.nsv-landing .nsv-plaza-section .course-item .course-inner .course-thumb p {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  line-height: 0 !important;
+}
+.nsv-landing .nsv-plaza-section .course-item .course-inner .course-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 234px !important;
+  max-height: 234px !important;
+  max-width: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  background-color: #fff !important;
+  display: block !important;
+  margin: auto !important;
+  float: none !important;
+  left: 0 !important;
+  transform: none !important;
+}
+
+/* =============================================================================
+   카테고리 라벨 — .nsv-landing h3 테마 스타일(큰 font-size/line-height)이
+   plaza .category-badge(h3)를 깨뜨려 글자가 잘리므로 리셋.
+   ========================================================================== */
+.nsv-landing h3.category-badge,
+.nsv-landing .category-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: flex-start !important; /* flex column 부모에서 가로로 늘어나지 않게 */
+  flex: 0 0 auto !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  padding: 0 12px !important;
+  margin: 0 0 8px !important;
+  border-radius: 50px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  box-sizing: border-box !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: unset !important;
+}
+.nsv-landing .svy_list_li_new .thumbs-survey .category-badge {
+  margin: 0 !important;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 3;
+  align-self: auto !important; /* absolute 배지는 stretch 이슈 없음 */
+}
+/* PC 리뉴얼 카드 카테고리 — 글자 길이만큼만 남는 compact pill */
+.nsv-landing .card-cate-badge,
+.nsv-landing .blog-cate-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: flex-start !important;
+  flex: 0 0 auto !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  line-height: 1 !important;
+  padding: 4px 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* AI 자기진단: 카테고리 + 초록 보고서 뱃지 (운영계 lists와 동일) */
+.nsv-landing .course-item .badge-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.nsv-landing .course-item .badge-box .category-badge {
+  margin: 0 !important;
+}
+.nsv-landing .course-item .category-badge.aiselfdiag {
+  background: #fff3e0 !important;
+  color: #fb8c00 !important;
+}
+.nsv-landing .course-item .category-badge.report {
+  background: #E8F8F0 !important;
+  color: #1A7A44 !important;
+}
+
+/* 설문광장 PC 카드: 좋아요 오른쪽 댓글 (운영계와 동일, 값이 있을 때만) */
+.nsv-landing .sq-social {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.nsv-landing .sq-social .sq-reaction-inline {
+  margin-left: 0;
+}
+.nsv-landing .sq-comment-inline {
+  display: inline-block;
+  padding: 0 0 0 24px;
+  height: 28px;
+  color: #666;
+  line-height: 28px;
+  background: url("../../../img/issue/ico-comment02.png") no-repeat left center;
+  font-size: 14px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   설문 광장 — PC: renew cards / Mobile: /issue/svy/lists 스타일 (plaza.css)
+   Breakpoint matches plaza.css (max-width: 1023px).
+   ========================================================================== */
+.nsv-landing .nsv-plaza-section .nsv-plaza-mo-list {
+  display: none;
+  list-style: none;
+  margin: 0 !important;
+  padding: 0;
+  max-width: 100% !important;
+}
+.nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid {
+  display: flex;
+}
+@media (max-width: 1023px) {
+  .nsv-landing .nsv-plaza-section .nsv-plaza-pc-grid {
+    display: none !important;
+  }
+  .nsv-landing .nsv-plaza-section .nsv-plaza-mo-list {
+    display: block;
+  }
+  /* Force mobile info block visible (lists page toggles .mo/.pc the same way) */
+  .nsv-landing .nsv-plaza-section .list_new li.svy_list_li_new .box .info .info_txt.mo {
+    display: block !important;
+  }
+  .nsv-landing .nsv-plaza-section .list_new li.svy_list_li_new .box .info .info_txt.pc {
+    display: none !important;
+  }
+  .nsv-landing .modal{
+    position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	background: #fff;
+	max-width: 90%;
+	width: max-content;
+	height: fit-content;
+	max-height: 86vh;
+	border: 0;
+	border-radius: 12px;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+  }
+  .share-modal-wrap h3{
+    font-size: 20px;
+  }
+  /* Landing container padding — keep cards readable on narrow screens */
+  .nsv-landing .nsv-plaza-section .list_new li.svy_list_li_new {
+    box-sizing: border-box;
+  }
+  .nsv-landing .nsv-plaza-section .list_new li.svy_list_li_new .thumbs-survey {
+    cursor: pointer;
+  }
+  /* Hide nested PC-only share hover panels inside mobile share markup */
+  .nsv-landing .nsv-plaza-section .nsv-plaza-mo-list .sns-area2 {
+    display: none !important;
+  }
+}
+
+/* =============================================================================
+   패널설문 견적요청 (#free_estimate.panel-modal)
+   Pin to the right next to .main-survey-tab (견적요청). Renew page overflow-x:clip
+   / theme rules can knock fixed right-docked panels off their intended edge.
+   ========================================================================== */
+html:has(.nsv-landing) #free_estimate.panel-modal,
+html:has(.nsv-landing) .panel-modal {
+  position: fixed !important;
+  top: 10px !important;
+  right: 0 !important; /* flush to viewport edge — covers 견적요청 tab */
+  left: auto !important;
+  bottom: 10px !important;
+  width: 550px !important;
+  max-width: calc(100vw - 16px) !important;
+  margin: 0 !important;
+  transform: none !important;
+  z-index: 10050 !important; /* above .header (10001) and #header_gnb */
+}
+html:has(.nsv-landing) .main-survey-tab {
+  z-index: 9998 !important; /* keep tab under open estimate panel */
+}
+@media screen and (max-width: 768px) {
+  html:has(.nsv-landing) #free_estimate.panel-modal,
+  html:has(.nsv-landing) .panel-modal {
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+}
+
+/* =============================================================================
+   핫이슈 — /issue/hot/lists 와 동일 카드 (PC·모바일 공통, v2/sub .sub-page.survey)
+   .nsv-landing Bootstrap/theme resets (p margin, a display, ul padding) break
+   the legacy float meta row + area-btns footer → icon overlap + squeezed footer.
+   ========================================================================== */
+.nsv-landing .nsv-hot-section .nsv-hot-lists {
+  max-width: 1230px;
+  margin: 0 auto;
+}
+.nsv-landing .nsv-hot-section .nsv-hot-lists ul.list {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-left: 0 !important; /* reset .nsv-landing ul { padding-left:2rem } */
+  list-style: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li {
+  vertical-align: top !important;
+}
+/* .nsv-landing h3/h4 테마가 lists 카드 라벨·제목을 깨뜨리지 않게 (전 뷰포트) */
+.nsv-landing .nsv-hot-section .svy_list_li .info_txt h3,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info h3 {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #ed5c23 !important;
+  margin: 0 0 10px !important;
+  line-height: 1.3 !important;
+  height: auto !important;
+  max-height: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  width: auto !important;
+  align-self: flex-start !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .info_txt h4,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info h4 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #222 !important;
+  line-height: 1.4 !important;
+  margin: 0 0 10px !important;
+  height: 52px !important;
+  max-height: 52px !important;
+  min-height: 0 !important;
+}
+/* [2026 리뉴얼 개발] 핫이슈 썸네일을 height:auto 로 풀어 원본 비율 전체 표시.
+   개발버전으로 되돌릴 때 아래 주석을 해제하고, 이어지는 운영계 맞춤 규칙을 주석 처리.
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey {
+  overflow: hidden;
+  line-height: 0 !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey p {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey img {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  display: block !important;
+  vertical-align: middle;
+}
+*/
+
+/* [이전 시도] contain + 234px — 세로 인포그래픽이 축소되며 좌우 여백이 생김. 운영 메인은 slick이
+   width:100% + 영역 overflow로 가로를 채우고 상단을 자른다.
+.nsv-landing .nsv-hot-section .svy_list_li .box .thumbs-survey p img {
+  object-fit: contain !important;
+  min-height: 234px;
+  max-height: 234px;
+}
+*/
+
+/* 운영계 메인 핫이슈 썸네일: slider-for height 380px, 가로 가득, 상단 크롭.
+   랜딩 .nsv-landing img{left:-13%} / a{inline} 때문에 이미지가 비거나 밀리지 않게 보정. */
+.nsv-landing .nsv-hot-section .svy_list_li .info > a {
+  display: block !important;
+  width: 100% !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey {
+  overflow: hidden !important;
+  width: 100% !important;
+  height: 380px !important;
+  line-height: 0 !important;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  background: #fff;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey > p:empty {
+  display: none !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slider-cardnews {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slider-for {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 380px !important;
+  margin: 0 !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slick-list {
+  width: 100% !important;
+  height: 380px !important;
+  overflow: hidden !important;
+}
+/* slick-slide / slick-track 폭은 slick 인라인 계산값을 유지. width:100%!important 는
+   트랙 전체(장 수 × 카드폭)로 이미지가 커져 확대·깨짐처럼 보임. */
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slick-slide {
+  height: 380px !important;
+  overflow: hidden !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slick-track {
+  height: 380px !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey img {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 380px !important;
+  min-height: 0 !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  display: block !important;
+  float: none !important;
+  left: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  vertical-align: top !important;
+  transition: none !important;
+  transform: none !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .thumbs-survey .slider-for:not(.slick-initialized) .item-slick ~ .item-slick {
+  display: none !important;
+}
+.nsv-landing .nsv-hot-section .svy_list_li .box:hover {
+  box-shadow: 18px 18px 26px rgba(0, 0, 0, 0.3) !important;
+  transition: all .4s ease-out !important;
+}
+
+/* Meta row: date left, emotion+comment right — flex instead of nested floats */
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .info_txt {
+  padding: 16px 24px 0 !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin: 0 0 4px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  float: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt::after {
+  display: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt span,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_date,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community {
+  float: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_date {
+  display: inline-block !important;
+  padding: 5px 0 !important;
+  font-size: 14px !important;
+  color: #777 !important;
+  flex: 0 0 auto !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt p.info_community {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  line-height: 28px !important;
+  color: #666 !important;
+  flex: 0 1 auto !important;
+  text-align: right !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community > a {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: inherit !important;
+  text-decoration: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community .info_emotion-new,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community span {
+  float: none !important;
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community .info_emotion-new {
+  padding: 0 4px 0 36px !important;
+  height: 28px !important;
+  line-height: 1 !important;
+  background: url("../../../img/issue/btn-emotion02.svg") no-repeat left center !important;
+  background-size: 32px auto !important;
+  color: #666 !important;
+}
+/* Empty emotion placeholder (count=0) — don't reserve icon width */
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info .txt .info_community > span:empty {
+  display: none !important;
+  padding: 0 !important;
+  width: 0 !important;
+  background: none !important;
+}
+
+/* Footer: clear floats + consistent bottom padding (was flush to card edge) */
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 0 20px !important;
+  overflow: visible !important; /* PC 공유 호버 팝오버가 카드에 잘리지 않게 */
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .info {
+  flex: 1 1 auto !important;
+  margin: 0 !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin: 12px 24px 0 !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  text-align: left !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns2 {
+  display: none !important;
+}
+@media screen and (max-width: 1023px) {
+  .nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns {
+    display: none !important;
+  }
+  .nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns2 {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin: 12px 24px 0 !important;
+  }
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns::after {
+  display: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > span {
+  display: inline-flex !important;
+  float: none !important;
+  margin: 0 !important;
+  align-items: center !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p.btn {
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 10px 0 0 !important;
+  float: none !important;
+}
+/* 운영계 .btn.btn01 — 주황 테두리/글자. 리뉴얼 회색 card-result-btn 은 사용하지 않음. */
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p.btn.btn01,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns2 > p.btn.btn01 {
+  display: inline-block !important;
+  background: #fffaf8 !important;
+  border: 1px solid #ed5c23 !important;
+  border-radius: 4px !important;
+  padding: 6px 8px !important;
+  min-height: 36px !important;
+  box-sizing: border-box !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p.btn.btn01 a,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns2 > p.btn.btn01 a {
+  display: block !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #ef4400 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 0 !important;
+  line-height: 22px !important;
+  text-decoration: none !important;
+}
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p.btn.btn01:hover a,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns2 > p.btn.btn01:hover a {
+  color: #ed5c23 !important;
+}
+/*
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns .card-result-btn,
+.nsv-landing .nsv-hot-section .sub-page.survey .list li .box .area-btns > p a {
+  border: 1.5px solid #ddd !important;
+  color: #444 !important;
+}
+*/
+.nsv-landing .nsv-hot-section .share {
+  width: 44px !important;
+  height: 44px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+.nsv-landing .nsv-hot-section .share .btn-share img {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* =============================================================================
+   스마트 기능(유용한 도구) — slightly larger cards: bigger icons, roomier
+   padding and a touch larger label. Order/icons already match the legacy site.
+   ========================================================================== */
+/* Tool cards are now links again → keep them looking like the original block */
+.nsv-landing .category-section a.category-item {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nsv-landing .category-section a.category-item:hover .category-content h6 {
+  color: #ed5c23;
+}
+.nsv-landing .category-section .category-item .category-inner {
+  padding: 44px 20px !important;
+}
+.nsv-landing .category-section .category-item .category-inner .category-thumb {
+  margin-bottom: 18px;
+}
+.nsv-landing .category-section .category-item .category-inner .category-thumb img {
+  width: 58px !important;
+  height: 58px !important;
+  object-fit: contain;
+  border-radius: 0 !important;
+}
+.nsv-landing .category-section .category-item .category-inner .category-content h6 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* =============================================================================
+   Hero responsiveness.
+   - Orbit + KPI fan: desktop only (≥1200), matching the floating-badge design.
+   - Below 1200: fully hide (display:none) — no chip strip, no 0×0 focusable links.
+   - On mobile, also hide the hero figure and center the copy + CTAs.
+   ========================================================================== */
+@media (max-width: 1199.98px) {
+  .nsv-landing .banner-section .all-shapes,
+  .nsv-landing .banner-section .cbs-content-list {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  .nsv-landing .banner-section .cbs-content-list a {
+    display: none !important;
+  }
+}
+
+/* =============================================================================
+   AEO: FAQ section for citeable answers (hero tags stay h6/h2 — SEO via meta/JSON-LD)
+   ========================================================================== */
+.nsv-landing .nsv-faq-section {
+  background: #f7f5f2;
+}
+.nsv-landing .nsv-faq-section .section-header .desc {
+  max-width: 640px;
+  margin: 12px auto 0;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.nsv-landing .nsv-faq-list {
+  max-width: 820px;
+  margin: 36px auto 0;
+  display: grid;
+  gap: 12px;
+}
+.nsv-landing .nsv-faq-item {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  padding: 0 20px;
+}
+.nsv-landing .nsv-faq-q {
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  padding: 18px 0;
+  line-height: 1.45;
+}
+.nsv-landing .nsv-faq-q::-webkit-details-marker { display: none; }
+.nsv-landing .nsv-faq-kw {
+  transition: color .2s ease;
+}
+.nsv-landing .nsv-faq-item:hover .nsv-faq-kw,
+.nsv-landing .nsv-faq-item[open] .nsv-faq-kw {
+  color: #ed5c23;
+}
+.nsv-landing .nsv-faq-a {
+  padding: 0 0 18px;
+  color: #555;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.nsv-landing .nsv-faq-a p { margin: 0; }
+.nsv-landing .nsv-faq-a a { color: #ed5c23; text-decoration: underline; }
+
+/* Cutout PNG (transparent surround) — keep backgrounds clear so orbits show through */
+.nsv-landing .banner-section .banner-img-flipped {
+  -webkit-transform: none !important;
+  transform: none !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  max-height: 600px !important;
+  width: 100% !important;
+  height: auto !important;
+  background: transparent !important;
+}
+.nsv-landing .banner-section .banner-thumb.banner-thumb-cropped {
+  max-height: none !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border-radius: 0;
+}
+
+@media (max-width: 991.98px) {
+  /* Header image is NOT shown on mobile (per request). */
+  .nsv-landing .banner-section .banner-thumb {
+    display: none !important;
+  }
+  /* Roomier, fully centered hero on mobile. */
+  .nsv-landing .banner-section {
+    padding-top: 46px !important;
+    padding-bottom: 42px !important;
+  }
+  .nsv-landing .banner-section .section-wrapper .row {
+    justify-content: center !important;
+  }
+  .nsv-landing .banner-section .section-wrapper .banner-content,
+  .nsv-landing .banner-section .section-wrapper .banner-content .subtitle,
+  .nsv-landing .banner-section .section-wrapper .banner-content .title,
+  .nsv-landing .banner-section .section-wrapper .banner-content .desc {
+    text-align: center !important;
+  }
+  .nsv-landing .banner-section .section-wrapper .banner-content .banner-cta {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+}
+/* Very small screens: stack the two CTAs full-width for easy tapping. */
+@media (max-width: 479.98px) {
+  .nsv-landing .banner-section .section-wrapper .banner-content .banner-cta .lab-btn {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}
+
+/* =============================================================================
+   핫이슈 카드 — taller thumb + equal-height cards (no flex blowouts).
+   ========================================================================== */
+.nsv-landing .blog-section .row { align-items: stretch; }
+.nsv-landing .blog-section .post-item,
+.nsv-landing .blog-section .post-item .post-inner {
+  height: 100%;
+}
+.nsv-landing .blog-section .post-item .post-inner {
+  display: flex !important;
+  flex-direction: column !important;
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+/* Fixed thumb height (taller than original 210px) — never height:100% of card */
+.nsv-landing .blog-section .post-item .post-inner .post-thumb {
+  overflow: hidden !important;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  flex: 0 0 260px;
+  height: 260px !important;
+  max-height: 260px !important;
+  position: relative;
+  z-index: 0;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-thumb a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+}
+@media (max-width: 767px) {
+  .nsv-landing .blog-section .post-item .post-inner .post-thumb {
+    flex-basis: 200px;
+    height: 200px !important;
+    max-height: 200px !important;
+  }
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content {
+  flex: 1 1 auto;
+  padding: 16px 18px 8px !important;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content > a {
+  display: block;
+  color: inherit !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content h4 {
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  min-height: 2.6em;
+  max-height: 2.8em;
+  margin: 0 0 10px !important;
+  word-break: keep-all;
+  color: #1a1a1a !important;
+  font-size: 1.05rem !important;
+  line-height: 1.4 !important;
+  white-space: normal !important;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content .blog-cate-badge {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content .blog-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 !important;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-content .blog-date .card-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer.blog-post-footer {
+  margin-top: auto !important;
+  padding: 12px 18px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer .pf-left {
+  flex-shrink: 0;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer .blog-result-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none !important;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer .blog-pf-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  position: relative;
+}
+/* Keep share popovers from blowing card layout */
+.nsv-landing .blog-section .post-item .post-inner .post-footer .share {
+  position: relative;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer .share .sns {
+  z-index: 5;
+}
+.nsv-landing .blog-section .post-item .post-inner .post-footer .sq-reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+/* Section “더 보기” stays below the card grid — never overlays cards */
+.nsv-landing .blog-section .section-wrapper > .text-center.mt-5 {
+  position: relative;
+  z-index: 0;
+  clear: both;
+  margin-top: 2.5rem !important;
+}
+
+/* =============================================================================
+   파트너 마퀴 ↔ 다음 섹션 간격 축소 (큰 빈 여백 제거)
+   ========================================================================== */
+.nsv-landing .sponsor-section {
+  padding: 28px 0 12px !important;
+}
+/* 패널 설문이 없을 때 바로 이어지는 설문 광장과의 간격도 타이트하게 */
+.nsv-landing .sponsor-section + .course-section.padding-tb {
+  padding-top: 40px !important;
+}
+.nsv-landing .nsv-panel-section.padding-tb {
+  padding-top: 40px !important;
+}
+
+/* =============================================================================
+   패널 네트워크 이미지(.about-thumb) — responsive PC/mobile swap fills cleanly (SS6).
+   Text block sits a bit higher (less top padding; was align-items-end → empty gap).
+   ========================================================================== */
+.nsv-landing .about-section .about-right.padding-tb {
+  padding-top: 48px !important;
+  padding-bottom: 70px !important;
+}
+@media (min-width: 1200px) {
+  .nsv-landing .about-section .about-right.padding-tb {
+    padding-top: 56px !important;
+    padding-bottom: 90px !important;
+  }
+}
+.nsv-landing .about-section .about-left .about-thumb img,
+.nsv-landing .about-section .about-left .about-thumb picture {
+  width: 100%;
+  height: auto;
+}
+
+/* Mobile: center 패널 네트워크 copy + feature rows */
+@media (max-width: 991.98px) {
+  .nsv-landing .about-section .about-right {
+    text-align: center !important;
+  }
+  .nsv-landing .about-section .about-right .section-header {
+    text-align: center !important;
+  }
+  .nsv-landing .about-section .about-right .section-header p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .nsv-landing .about-section .about-right .section-wrapper ul {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .nsv-landing .about-section .about-right .section-wrapper ul li {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center !important;
+    width: 100%;
+    max-width: 420px;
+  }
+  .nsv-landing .about-section .about-right .section-wrapper ul li .sr-left {
+    margin-right: 0 !important;
+    margin-bottom: 12px;
+  }
+  .nsv-landing .about-section .about-right .section-wrapper ul li .sr-right {
+    width: 100% !important;
+  }
+  .nsv-landing .about-section .about-right .section-wrapper ul li .sr-right p {
+    max-width: 100% !important;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* =============================================================================
+   신뢰할 수 있는 패널로 (achievement) — responsive stacking on tablet/mobile (SS2).
+   ========================================================================== */
+@media (max-width: 991.98px) {
+  /* Mobile: content on the LEFT, image BIGGER and pinned to the RIGHT.
+     Deterministic — overrides the bundle's absolute .achieve-thumb rules. */
+     .bnr_25 .box_wrap .box_row .box_item{
+      gap: 0;
+     }
+     .bnr_25 .box_wrap .box_row .box_item .box_main_txt{
+      margin-bottom: 0;
+     }
+  .nsv-landing .achievement-section .achieve-item .achieve-inner {
+    position: relative !important;
+    display: block !important;
+    padding: 26px 42% 26px 26px;
+    min-height: 210px !important;
+    text-align: left !important;
+  }
+  .nsv-landing .achievement-section .achieve-item .achieve-inner .achieve-content {
+    position: static !important;
+    width: auto !important;
+  }
+  .nsv-landing .achievement-section .achieve-item .achieve-inner .achieve-thumb {
+    position: absolute ;
+    right: 10px;
+    bottom: 0;
+    top: auto;
+    left: auto;
+    width: 75%;
+    max-width: 190px ;
+    margin: 0;
+    order: 0;
+  }
+  .nsv-landing .achievement-section .achieve-item .achieve-inner .achieve-thumb img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+}
+
+/* =============================================================================
+   히어로 슬라이드 버튼 — 레거시 모바일 규칙 유지. 버튼 텍스트만 줄바꿈 방지.
+   (레이아웃/높이/절대배치는 v2/main.css 의 기존 반응형에 맡김)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+  .nsv-usecase-native .bnr_27_btn_area a,
+  .nsv-usecase-native .bnr25_btn_box .bnr25_btnM,
+  .nsv-usecase-native .bnr24_btn_box .bnr25_btnM {
+    white-space: nowrap;
+  }
+}
+
+/* =============================================================================
+   히어로 슬라이드 세로 스택 — 내부 모바일 반응형은 v2/main.css 그대로 유지.
+   래퍼만 height:auto 로 열어 여러 장이 세로로 쌓이게 하고,
+   각 슬라이드(bnr_*)는 기존 고정 높이(750→450→350) + overflow:hidden 을 유지한다.
+   (height:auto 로 개별 슬라이드를 풀면 absolute 레이아웃이 다음 슬라이드로 침범함)
+   ========================================================================== */
+.nsv-usecase-native #s_banner_wrap.nsv-stacked,
+.nsv-usecase-native #s_banner_wrap.nsv-stacked .bx-viewport,
+.nsv-usecase-native #s_banner_wrap.nsv-stacked .bxslider {
+  height: auto !important;
+  max-height: none !important;
+}
+.nsv-usecase-native #s_banner_wrap.nsv-stacked .bxslider > li {
+  position: relative !important;
+  float: none !important;
+  width: 100% !important;
+  overflow: hidden !important; /* 배경·절대배치 요소가 옆 슬라이드로 넘치지 않게 */
+  flex-shrink: 0;
+}
+
+/* =============================================================================
+   설문 분석 흐름도(.bnr_26) + 위치기반(.bnr_25) — mobile responsive (stacked only).
+   레거시 350px 고정 높이를 풀고, 버튼/카드/이미지를 세로로 흐르게.
+   (다른 슬라이드 absolute 레이아웃은 건드리지 않음)
+   ========================================================================== */
+   /*
+@media (max-width: 991.98px) {
+  .nsv-usecase-native .bnr_25,
+  .nsv-usecase-native .bnr_26 {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 36px 16px 40px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+
+  .nsv-usecase-native .bnr_25 .top_txt_wrap,
+  .nsv-usecase-native .bnr_26 .top_txt_wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr_25_t_2,
+  .nsv-usecase-native .bnr_26 .bnr_25_t_2 {
+    text-align: center !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .nsv-usecase-native .bnr_25 .left_txt,
+  .nsv-usecase-native .bnr_26 .left_txt,
+  .nsv-usecase-native .bnr_25 .left_txt02,
+  .nsv-usecase-native .bnr_26 .left_txt02,
+  .nsv-usecase-native .bnr_26 .summary_txt {
+    word-break: keep-all !important;
+    font-size: clamp(16px, 4.2vw, 24px) !important;
+    line-height: 1.4 !important;
+  }
+  .nsv-usecase-native .bnr_26 .summary_txt {
+    font-size: 14px !important;
+    margin: 0 auto !important;
+    max-width: 36em;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_btn_box,
+  .nsv-usecase-native .bnr_26 .bnr25_btn_box {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_btn_box .bnr25_btnM,
+  .nsv-usecase-native .bnr_26 .bnr25_btn_box .bnr25_btnM {
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_btn_box .youtube_btn,
+  .nsv-usecase-native .bnr_26 .bnr25_btn_box .youtube_btn {
+    white-space: nowrap !important;
+  }
+
+  .nsv-usecase-native .bnr_26 .img_wrap,
+  .nsv-usecase-native .bnr_26 .bnr26_left_right {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 20px auto 0 !important;
+    padding: 0 !important;
+  }
+  .nsv-usecase-native .bnr_26 .img_wrap ul {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+  .nsv-usecase-native .bnr_26 .img_wrap ul li {
+    width: 100% !important;
+    max-width: 480px !important;
+    box-sizing: border-box !important;
+  }
+  .nsv-usecase-native .bnr_26 .img_wrap ul li img:not(.img_box_icon) {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+  }
+  .nsv-usecase-native .bnr_26 .img_wrap ul li p {
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: 100% !important;
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+  .nsv-usecase-native .bnr_26 .noti-center-bottom {
+    position: static !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 16px auto 0 !important;
+    text-align: center !important;
+    color: #5a57e5 !important;
+    font-size: 13px !important;
+    word-break: keep-all !important;
+  }
+
+  .nsv-usecase-native .bnr_25 .bnr25_left_right {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    width: 100% !important;
+    padding: 8px 0 0 !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_left_right .left_section,
+  .nsv-usecase-native .bnr_25 .bnr25_left_right .right_section {
+    width: 100% !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_left_right .right_section {
+    display: block !important; 
+    text-align: center !important;
+  }
+  .nsv-usecase-native .bnr_25 .right_section .img_wrap {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 220px !important;
+    margin: 0 auto !important;
+  }
+  .nsv-usecase-native .bnr_25 .right_section .img_wrap .phone-img {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  .nsv-usecase-native .bnr_25 .box_wrap {
+    width: 100% !important;
+    align-items: stretch !important;
+  }
+  .nsv-usecase-native .bnr_25 .box_wrap .box_row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  .nsv-usecase-native .bnr_25 .box_wrap .box_row .box_item {
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .nsv-usecase-native .bnr_25 .left_txt img {
+    width: 22px !important;
+    height: auto !important;
+    vertical-align: middle !important;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .nsv-usecase-native .bnr_25,
+  .nsv-usecase-native .bnr_26 {
+    padding: 28px 12px 32px !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_btn_box .bnr25_btnM,
+  .nsv-usecase-native .bnr_26 .bnr25_btn_box .bnr25_btnM {
+    flex: 1 1 calc(50% - 8px) !important;
+  }
+  .nsv-usecase-native .bnr_25 .bnr25_btn_box .youtube_btn,
+  .nsv-usecase-native .bnr_26 .bnr25_btn_box .youtube_btn {
+    width: 100% !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+}
+*/
+/* =============================================================================
+   AI 플랫폼(.bnr_23)
+   - 새 캐릭터 사이즈 보정
+   - 소개서/소개영상: 가로 배치 + 캐릭터 손가락 끝에 부착
+   - 모바일 반응형 (스택 레이아웃)
+   ========================================================================== */
+   
+.nsv-usecase-native .bnr_23 .bgImg {
+  max-width: 280px;
+  width: auto;
+  left: 300px;
+  bottom: 90px;
+}
+.nsv-usecase-native .bnr_23 .bgImg img {
+  width: 100%;
+  max-height: 420px;
+  height: auto;
+  object-fit: contain;
+}
+
+.nsv-usecase-native .bnr_23 .bgImg .robot-btn-wrap {
+  position: absolute !important;
+  top: 10%;
+  left: 80%;
+  right: auto;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+  z-index: 20 !important;
+}
+.nsv-usecase-native .bnr_23 .bgImg .robot-btn {
+  display: block !important;
+  width: 96px !important;
+  margin: 0 !important;
+}
+.nsv-usecase-native .bnr_23 .bgImg .robot-btn img {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .nsv-usecase-native .bnr_23 {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 28px 16px 36px !important;
+    box-sizing: border-box !important;
+  }
+  .nsv-usecase-native .bnr_23 .bgWrap {
+    height: auto !important;
+    position: relative !important;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_32_wrapper {
+    height: auto !important;
+    padding: 0 !important;
+    gap: 18px !important;
+    justify-content: flex-start !important;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 .line,
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 .main-visual-23-icon {
+    display: none !important;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 .bottomTitle {
+    font-size: 26px !important;
+    padding: 0 !important;
+    text-align: center !important;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 .titleMobile {
+    display: block !important;
+    text-align: center !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+    color: #fff;
+  }
+  .nsv-usecase-native .bnr_23 .bnr_23_t_2 .titleMobile p span{
+    color: #63e9ff;
+  }
+
+  /* Hide duplicate mobile CTA strip (buttons already on character) */
+  .nsv-usecase-native .bnr_23 .bgImgM { display: none; }
+  .nsv-usecase-native .bnr_23 .tabletCardWrapper{display: flex;}
+  .nsv-usecase-native .bnr_23 .mobletabletbtn { display: none; }
+
+  .mobletabletbtn a:not(:last-child){
+    margin-right: 8px;
+  }
+
+  /* Feature cards stack full-width */
+  .nsv-usecase-native .bnr_23 .flxBoxWrapper {
+    flex-direction: column !important;
+    width: 100% !important;
+    padding-top: 0;
+  }
+  .nsv-usecase-native .bnr_23 .flxBoxWrapper .bnr_23_img_box { display: none !important; }
+  .nsv-usecase-native .bnr_23 .flxBoxWrapper .bnr_22_t_3 {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 14px !important;
+    padding: 0 !important;
+  }
+  .nsv-usecase-native .bnr_23 .flxBoxWrapper .bnr_22_t_3 .title {
+    display: none !important; /* titleMobile already shown above */
+  }
+  .nsv-usecase-native .bnr_23 .cardWrapper {
+    display: none;
+    gap: 12px !important;
+  }
+  .nsv-usecase-native .bnr_23 .cardWrapper .card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .bnr_23 .flxBoxWrapper .bnr_22_t_3 .cardWrapper .card{
+    min-width: auto;
+    height: fit-content;
+  }
+
+  .bnr_21_img{
+    background-position: center 63px;
+  }
+}
+@media (max-width: 560px) {
+  .nsv-usecase-native .bnr_23 .tabletCardWrapper{
+    display: none;
+  }
+  .nsv-usecase-native .bnr_23 .mobletabletbtn { 
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+}
+@media (max-width: 520px) {
+  .bnr_26 .img_wrap ul{
+    margin: 0 auto;
+  }
+  .bnr_26 .img_wrap ul li{
+    width: 300px;
+  }
+}
+/* =============================================================================
+   소개 영상 섹션 (YouTube) — responsive 16:9 embed, centered.
+   ========================================================================== */
+.nsv-landing .nsv-video-section .section-header { margin-bottom: 32px; }
+/* Wider than default Bootstrap container so the player fills more of the PC viewport */
+@media (min-width: 1200px) {
+  .nsv-landing .nsv-video-section > .container {
+    max-width: 1280px;
+  }
+}
+@media (min-width: 1400px) {
+  .nsv-landing .nsv-video-section > .container {
+    max-width: 1400px;
+  }
+}
+.nsv-landing .nsv-video-embed {
+  position: relative;
+  width: 100%;
+  max-width: none; /* use full section container width */
+  margin: 0 auto;
+  padding-top: 56.25%; /* 16:9 — robust fallback for aspect-ratio */
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.4);
+}
+.nsv-landing .nsv-video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  display: block;
+}
+@media (max-width: 767.98px) {
+  .nsv-landing .nsv-video-embed { border-radius: 10px; }
+}
+
+/* =============================================================================
+   Typebot chat bubble — host must be fixed/contained or it widens scrollWidth
+   (~42px at 1366). Shadow UI stays fixed via its own styles; pin the host.
+   ========================================================================== */
+html:has(.nsv-landing) typebot-bubble {
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  left: auto !important;
+  top: auto !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  z-index: 424242;
+  /* no contain:layout — it would retarget shadow fixed children to the host */
+}
+
+/* =============================================================================
+   맨 위로(scroll-to-top) 버튼 — appears after scrolling; sits above the chat bubble.
+   ========================================================================== */
+#nsvTopBtn {
+  position: fixed;
+  right: 22px;
+  bottom: 96px;
+  z-index: 9998;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: #2b2f36;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  line-height: 1;
+  box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity .25s ease, transform .25s ease, visibility .25s ease, background-color .2s ease;
+}
+#nsvTopBtn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+#nsvTopBtn:hover { background: #ed5c23; }
+#nsvTopBtn .nsv-top-arrow { font-size: 18px; font-weight: 700; }
+#nsvTopBtn .nsv-top-text { font-size: 10px; font-weight: 700; letter-spacing: .04em; }
+@media (max-width: 767.98px) {
+  #nsvTopBtn { right: 16px; bottom: 84px; width: 46px; height: 46px; }
+}
+@media screen and (max-width: 1680px) {
+	.nsv-usecase-native .bnr_23 .bgImg{
+		left: 12%;
+    bottom: 10%;
+	}
+  .nsv-usecase-native .bnr_23 .bgImg img{
+    max-height: 360px;
+  }
+  .bnr_23 .flxBoxWrapper{
+    padding-top: 40px;
+  }
+}
+@media screen and (max-width: 1436px) {
+	.nsv-usecase-native .bnr_23 .bgImg{
+		left: 10%;
+    bottom: 25%;
+	}
+}
+@media screen and (max-width: 1312px) {
+  .nsv-usecase-native .bnr_23 .bgImg img{
+    max-height: 300px;
+  }
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn-wrap {
+    top: 7%;
+  }
+}
+@media screen and (max-width: 1270px){
+  .bnr_23 .flxBoxWrapper .bnr_22_t_3 .title{
+    font-size: 36px;
+  }
+}
+@media screen and (max-width: 1110px) {
+	.nsv-usecase-native .bnr_23 .bgImg{
+		left: 6%;
+    bottom: 25%;
+	}
+}
+@media (max-width: 1023px) {
+  .nsv-usecase-native .bnr_23 .bgImg {
+    max-width: 150px;
+    left: 48px;
+    bottom: 70px;
+  }
+  .nsv-usecase-native .bnr_23 .bgImg img { max-height: 300px; }
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn-wrap {
+    top: 10%;
+  }
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn { width: 78px !important; }
+  .bnr_23 .flxBoxWrapper .bnr_22_t_3 .title{
+    font-size: 26px;
+  }
+}
+@media (max-width: 767px) {
+  .nsv-usecase-native .bnr_23 .bgImg {
+    position: relative;
+    left: 18px;
+    right: auto;
+    bottom: auto;
+    margin: 4px auto 8px;
+    max-width: 170px;
+  }
+  
+  .nsv-usecase-native .bnr_23 .bgImg img {
+    max-height: 170px !important;
+  }
+
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn {
+    display: block;
+    width: 68px;
+  }
+
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn-wrap {
+    top:3px;
+    left: 66%;
+    flex-direction: row !important;
+    gap: 4px;
+  }
+}
+@media (max-width: 460px) {
+  .nsv-usecase-native .bnr_23 {
+    padding: 60px 16px 36px !important;
+  }
+  .nsv-usecase-native .bnr_23 .bgImg{
+    left: 0;
+  }
+  .nsv-usecase-native .bnr_23 .bgImg .robot-btn-wrap {
+    top: -28%;
+    left: 64%;
+    flex-direction: column !important;
+  }
+}

@@ -1,0 +1,49 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python and JavaScript tooling
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+.pyc
+.pyo
+
+# Environment and configuration files
+.env
+.env.local
+.env.*.local
+*.env
+config.local.*
+
+# Build and distribution
+dist/
+build/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Local verification output (the JSON report remains tracked)
+website-redesign/validation/*.png
+
+# Temporary download and browser artifacts
+website-redesign/.cache/
+website-redesign/.tmp/
+tmp/
+temp/
+*.tmp
